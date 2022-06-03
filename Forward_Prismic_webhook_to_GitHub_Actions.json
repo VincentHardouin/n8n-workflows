@@ -1,0 +1,85 @@
+{
+  "name": "Forward Prismic webhook to GitHub Actions",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Start",
+      "type": "n8n-nodes-base.start",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "basicAuth",
+        "httpMethod": "POST",
+        "path": "forward-prismic-webhook-to-github-actions",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        460,
+        300
+      ],
+      "webhookId": "a29ba5d5-a24e-4420-90f5-2b6707e188b0",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "1",
+          "name": "Prismic to github"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "requestMethod": "POST",
+        "url": "=https://api.github.com/repos/{{$node[\"Webhook\"].json[\"query\"][\"owner\"]}}/{{$node[\"Webhook\"].json[\"query\"][\"repository\"]}}/dispatches",
+        "options": {
+          "bodyContentType": "json"
+        },
+        "bodyParametersUi": {
+          "parameter": [
+            {
+              "name": "event_type",
+              "value": "={{$node[\"Webhook\"].json[\"query\"][\"event_type\"]}}"
+            }
+          ]
+        },
+        "headerParametersUi": {
+          "parameter": [
+            {
+              "name": "Authorization",
+              "value": "=token {{$node[\"Webhook\"].json[\"query\"][\"github-token\"]}}"
+            }
+          ]
+        }
+      },
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        680,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "id": 1
+}
